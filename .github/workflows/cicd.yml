@@ -56,16 +56,17 @@ jobs:
           coverage xml -o coverage.xml
       - name: setting up sonar
         uses: warchant/setup-sonar-scanner@v7    
-      - name: Run SonarCloud Scan (fallback if no coverage)
+      - name: Run SonarCloud Scan (force default branch)
         run: |
           if [ -f coverage.xml ]; then
             echo "✅ Found coverage.xml. Running SonarScanner with coverage..."
             sonar-scanner \
               -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
               -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-              -Dsonar.host.url=${{ secrets.SONAR_URL}} \
+              -Dsonar.host.url=${{ secrets.SONAR_URL }} \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.sources=. \
+              -Dsonar.branch.name=main \
               -Dsonar.coverageReportPaths=coverage.xml \
               -Dsonar.python.xunit.reportPath=pytest-report.xml
           else
@@ -73,7 +74,8 @@ jobs:
             sonar-scanner \
               -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
               -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-              -Dsonar.host.url=${{ secrets.SONAR_URL}} \
+              -Dsonar.host.url=${{ secrets.SONAR_URL }} \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-              -Dsonar.sources=.
+              -Dsonar.sources=. \
+              -Dsonar.branch.name=main
           fi
