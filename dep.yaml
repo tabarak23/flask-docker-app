@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: flas-app
+    labels:
+      app: flask
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: new-flask
+        image: tabarak23/flasku:v2
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "80Mi"
+            cpu: "600m"
+          limits:
+            memory: "100Mi"
+            cpu: "800m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+            httpHeaders:
+            - name: Custom-Header
+              value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+
+        
