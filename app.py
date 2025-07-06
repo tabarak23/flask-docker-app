@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "hajaat rawa is only allah nafa and nuksaan's only muktaar is allah"
+    return "making my hands dirty on cicd with docker and k8s"
 
 
 @app.route('/healthz')
