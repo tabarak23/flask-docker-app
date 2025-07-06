@@ -76,3 +76,12 @@ jobs:
 
       - name: Wait for deployment rollout
         run: kubectl rollout status deployment/flas-app --timeout=60s
+
+      - name: Get pods status
+        run: kubectl get pods
+
+      - name: Describe pods
+        run: kubectl describe pods
+
+      - name: Get logs from pods
+        run: kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
