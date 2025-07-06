@@ -36,7 +36,10 @@ jobs:
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt 
+      - name: Install testing dependencies
+        run: |
+          pip install coverage pytest pytest-cov
       - name: setting up path 
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
       - name: autoformatter
