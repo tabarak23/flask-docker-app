@@ -39,6 +39,10 @@ jobs:
           pip install -r requirements.txt
       - name: setting up path 
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+      - name: autoformatter
+        run: |
+          black test_app.py
+
       - name: linting with flake
         run: |
           flake8 .
