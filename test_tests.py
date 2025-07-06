@@ -10,9 +10,10 @@ def test_hello(client):
     response = client.get('/')
     assert response.status_code == 200
     assert (
-    b"making my hands dirty on cicd with docker and k8s"
-    in response.data
-)
+        b"making my hands dirty on cicd with docker and k8s"
+        in response.data
+    )
+
 
 def test_healthz(client):
     response = client.get('/healthz')
