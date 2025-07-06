@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: new-flask
-        image: tabarak23/flasku:v2
+        image: tabarak23/flas-k8s-app
         ports:
         - containerPort: 5000
         resources:
