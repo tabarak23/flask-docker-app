@@ -41,7 +41,7 @@ jobs:
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
       - name: autoformatter
         run: |
-          black test_app.py
+          black test_tests.py
 
       - name: linting with flake
         run: |
