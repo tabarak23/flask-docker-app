@@ -1,0 +1,72 @@
+name: flask-cicd
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: cloning of code
+        uses: actions/checkout@v4
+      
+      - name: install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: install dependencies 
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+  linting-testing:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - name: python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: setting up path 
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+      - name: linting with flake
+        run: |
+          flake8 .
+      - name: Run Pytest with Reports
+        run: |
+          pytest --junitxml=pytest-report.xml
+          coverage run -m pytest
+          coverage xml -o coverage.xml
+      - name: setting up sonar
+        uses: warchant/setup-sonar-scanner@v7    
+      - name: Run SonarCloud Scan (fallback if no coverage)
+        run: |
+          if [ -f coverage.xml ]; then
+            echo "✅ Found coverage.xml. Running SonarScanner with coverage..."
+            sonar-scanner \
+              -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.sources=. \
+              -Dsonar.coverageReportPaths=coverage.xml \
+              -Dsonar.python.xunit.reportPath=pytest-report.xml
+          else
+            echo "⚠️ coverage.xml not found. Running SonarScanner without coverage..."
+            sonar-scanner \
+              -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.sources=.
+          fi
