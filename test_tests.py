@@ -1,4 +1,3 @@
-# test_app.py
 import pytest
 from app import app  # import your Flask app
 
