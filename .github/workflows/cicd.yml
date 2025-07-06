@@ -53,35 +53,32 @@ jobs:
           chmod +x ./kind
           sudo mv ./kind /usr/local/bin/kind
 
-      - name: Create kind cluster
+      - name: creating kind cluster
         run: kind create cluster --name ci-cluster
 
-      - name: Log in to DockerHub
+      - name: docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build Docker image
+      - name: image build
         run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
-      - name: Load Docker image into kind
+      - name: image to kind
         run: kind load docker-image $IMAGE_NAME:$IMAGE_TAG --name ci-cluster
 
-      - name: Replace TAG placeholder in k8s YAML
+      - name: tagging 
         run: sed -i "s|TAG|${IMAGE_TAG}|g" k8s/dep.yaml
 
-      - name: Apply Kubernetes manifests
+      - name: k8s apply
         run: kubectl apply -f k8s/
 
-      - name: Wait for deployment rollout
+      - name: rolling 
         run: kubectl rollout status deployment/flas-app --timeout=60s
 
-      - name: Get pods status
-        run: kubectl get pods
-
-      - name: Describe pods
-        run: kubectl describe pods
-
-      - name: Get logs from pods
-        run: kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
+      - name: Test Flask app on kind cluster
+        run: |
+          kubectl port-forward svc/nodeport 5000:5000 &
+          sleep 5
+          curl http://localhost:5000/
