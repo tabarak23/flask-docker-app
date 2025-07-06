@@ -1,18 +1,21 @@
-from flask import Flask, jsonify
+import pytest
+from app import app
 
 
-app = Flask(__name__)
+@pytest.fixture
+def client():
+    with app.test_client() as client:
+        yield client
 
 
-@app.route('/')
-def hello():
-    return "hajaat rawa is only allah nafa and nuksaan's only muktaar is allah"
+def test_hello(client):
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b"hajaat rawa is only allah nafa" in response.data
 
 
-@app.route('/healthz')
-def healthz():
-    return jsonify({"status": "ok"}), 200
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+def test_healthz(client):
+    response = client.get('/healthz')
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data == {"status": "ok"}
