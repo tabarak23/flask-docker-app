@@ -72,7 +72,7 @@ jobs:
         run: sed -i "s|TAG|${IMAGE_TAG}|g" k8s/dep.yaml
 
       - name: Apply Kubernetes manifests
-        run: kubectl apply -f k8s/*
+        run: kubectl apply -f k8s/
 
       - name: Wait for deployment rollout
         run: kubectl rollout status deployment/flas-app --timeout=60s
